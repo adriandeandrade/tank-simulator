@@ -13,6 +13,7 @@ namespace ChobiAssets.PTM
 		*/
 
         // User options >>
+        public GameObject AP_Projectile_Prefab;
         public GameObject AP_Bullet_Prefab;
         public GameObject HE_Bullet_Prefab;
         public GameObject MuzzleFire_Object;
@@ -43,8 +44,7 @@ namespace ChobiAssets.PTM
             Initialize();
         }
 
-
-        void Initialize()
+        protected virtual void Initialize()
         {
             thisTransform = transform;
 
@@ -54,10 +54,10 @@ namespace ChobiAssets.PTM
         }
 
 
-        public void Switch_Bullet_Type()
+        public virtual void Switch_Bullet_Type()
         { // Called from "Cannon_Fire_Input_##_##" scripts.
             currentBulletType += 1;
-            if (currentBulletType > 1)
+            if (currentBulletType > 2)
             {
                 currentBulletType = 0;
             }
@@ -72,11 +72,15 @@ namespace ChobiAssets.PTM
                 case 1: // HE
                     Current_Bullet_Velocity = Initial_Velocity_HE;
                     break;
+
+                case 2:
+                    Current_Bullet_Velocity = 2000;
+                    break;
             }
         }
 
 
-        public void Fire_Linkage(int direction)
+        public virtual void Fire_Linkage(int direction)
         { // Called from "Cannon_Fire_CS".
             if (Barrel_Type == 0 || Barrel_Type == direction)
             { // Single barrel, or the same direction.
@@ -87,7 +91,7 @@ namespace ChobiAssets.PTM
         }
 
 
-        IEnumerator Generate_Bullet()
+        protected virtual IEnumerator Generate_Bullet()
         {
             // Generate the muzzle fire.
             if (MuzzleFire_Object)
@@ -119,6 +123,22 @@ namespace ChobiAssets.PTM
                     bulletObject = Instantiate(HE_Bullet_Prefab, thisTransform.position + (thisTransform.forward * Offset), thisTransform.rotation) as GameObject;
                     attackPoint = Attack_Point_HE;
                     break;
+
+                case 2:
+                    if (AP_Projectile_Prefab == null)
+                    {
+                        Debug.LogError("'AP_Projectile_Prefab' is not assigned in the 'Bullet_Generator'.");
+                        yield break;
+                    }
+
+                    bulletObject = Instantiate(AP_Projectile_Prefab);
+
+                    Vector3 startPosition = thisTransform.position;
+                    Vector3 startDirection = thisTransform.forward;
+
+                    bulletObject.GetComponent<MoveBullet>().SetStartValues(startPosition, startDirection);
+
+                    yield break;
 
                 default:
                     yield break;

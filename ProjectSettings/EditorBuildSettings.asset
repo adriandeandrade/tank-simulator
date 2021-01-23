@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/ballistics-dev.unity
+    path: Assets/ballistics-dev/Scenes/ballistics-dev.unity
     guid: ad15e303ec863ba45a3fb9912f22d2a4
   m_configObjects: {}
